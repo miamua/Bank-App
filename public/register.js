@@ -14,14 +14,14 @@ registerForm.addEventListener("submit", async(e) => {
         body: JSON.stringify({
             username: registerUsername.value,
             password: registerPassword.value,
-            money: registerMoney.value
+            money: Number(registerMoney.value)
 
         })
     });
-    const data = await response.json();
-    console.log('RegisterResult:', data);
+    //const data = await response.json();
+    //console.log('RegisterResult:', data);
     if(response.status === 200){
         alert("Registration successful, Please login");
-        window.location.href = "/login";
+        window.location.href = "login.html";
       }
 });

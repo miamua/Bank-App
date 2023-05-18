@@ -17,7 +17,6 @@ app.use(cors());
 app.use(cookieParser());
 //app.use(express.static("public"));
 app.use(express.static(join(__dirname, "public")));
-app.use(express.static(join(__dirname, "views")));
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -41,40 +40,27 @@ app.use((req, res, next) => {
 const client = new MongoClient("mongodb://127.0.0.1:27017");
 await client.connect();
 
-
-const db = client.db("userdb");
-const usersCollection = db.collection("users");
+const db = client.db("bankDB");
+const usersCollection = db.collection("accounts");
 
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to the home page" });
 });
 
-app.get("/login", (req, res) => {
-  //res.json({ message: "Please login" });
-  res.sendFile(join(__dirname, "/views/login.html"));
-});
-
-app.get("/register", (req, res) => {
-  //res.json({ message: "Please register" });
-  res.sendFile(join(__dirname, "/views/register.html"));
-});
-
-app.get("/accounts", async (req, res) => {
+app.get("/accounts/all", requireLogin, async (req, res) => {
   const limit = parseInt(req.query.limit) || 0;
   let entries = await usersCollection.find({}).limit(limit).toArray();
   res.json(entries);
-  //res.sendFile(join(__dirname, '/views/accounts.html'));
 });
 
-/*
-app.delete("/accounts/:id", async (req, res) => {
+app.get("/accounts", requireLogin, async (req, res) => {
+  const limit = parseInt(req.query.limit) || 0;
+  let entries = await usersCollection.find({}).limit(limit).toArray();
+  res.sendFile(join(__dirname, "/accounts.html"));
+});
+
+app.post("/account/:id/delete", async (req, res) => {
   await usersCollection.deleteOne({ _id: new ObjectId(req.params.id) });
-  res.status(204).send();
-});
-*/
-
-app.post('/account/:id/delete', async (req, res) => {
-  await usersCollection.deleteOne(({ _id: new ObjectId(req.params.id) }));
   res.status(204).send();
 });
 
@@ -86,7 +72,7 @@ app.post("/register", async (req, res) => {
     money: req.body.money,
   });
   res.json({ message: "Registration successful" });
-  //res.sendFile(join(__dirname, '/views/login.html'));
+  //res.sendFile(join(__dirname, '/public/login.html'));
 });
 
 app.post("/login", async (req, res) => {
@@ -104,7 +90,7 @@ app.post("/login", async (req, res) => {
         user: req.session.user,
       });
       //res.status(200).json({ message: "Login successful"});
-      //res.sendFile(__dirname + '/views/secrets.html');
+      //res.sendFile(__dirname + '/secrets.html');
     } else {
       res.status(401).json({
         message: "Wrong Password",
@@ -118,10 +104,12 @@ app.post("/login", async (req, res) => {
 
 app.get("/user", async (req, res) => {
   let userId = req.session.user;
-  let entries = await usersCollection.findOne({ _id: new ObjectId(userId._id) });
+  let entries = await usersCollection.findOne({
+    _id: new ObjectId(userId._id),
+  });
   res.json(entries);
   //res.json({
-    //user: req.session.user,
+  //user: req.session.user,
   //});
 });
 
@@ -144,7 +132,7 @@ app.post("/accounts/:id/transaction", async (req, res) => {
     { _id: new ObjectId(id) },
     { $set: { money: account.money } }
   );
-  res.sendFile(__dirname + "/views/secrets.html");
+  res.sendFile(__dirname + "/secrets.html");
 });
 
 // Middleware to check if the user is authenticated
@@ -152,12 +140,12 @@ function requireLogin(req, res, next) {
   if (req.session && req.session.user) {
     next();
   } else {
-    res.redirect("/login");
+    res.sendFile(join(__dirname, "/public/login.html"));
   }
 }
-// Restricted page route
+
 app.get("/secrets", requireLogin, (req, res) => {
-  res.sendFile(__dirname + "/views/secrets.html");
+  res.sendFile(join(__dirname, "secrets.html"));
 });
 
 app.post("/logout", (req, res) => {

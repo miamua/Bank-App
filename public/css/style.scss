@@ -48,15 +48,10 @@ footer {
     bottom: 0;
     width: 100%;
 
-    nav {
-        a {
+    div {
+        small {
             text-decoration: none;
             color: #dff6ff;
-
-            &:hover {
-                color: #47b5ff;
-                font-weight: bolder;
-            }
         }
     }
 }
@@ -65,7 +60,7 @@ footer {
     width: 700px;
     height: 200px;
     position: absolute;
-    top: 30%;
+    top: 35%;
     left: 50%;
     transform: translate(-50%, -50%);
 
@@ -117,4 +112,11 @@ footer {
 
 .container{
     margin-top: 5%;
+}
+
+#myAccount{
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    align-items: center;
 }

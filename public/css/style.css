@@ -42,20 +42,16 @@ footer {
   bottom: 0;
   width: 100%;
 }
-footer nav a {
+footer div small {
   text-decoration: none;
   color: #dff6ff;
-}
-footer nav a:hover {
-  color: #47b5ff;
-  font-weight: bolder;
 }
 
 .content {
   width: 700px;
   height: 200px;
   position: absolute;
-  top: 30%;
+  top: 35%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
@@ -98,4 +94,11 @@ footer nav a:hover {
 
 .container {
   margin-top: 5%;
+}
+
+#myAccount {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  align-items: center;
 }/*# sourceMappingURL=style.css.map */

@@ -18,10 +18,20 @@ loginForm.addEventListener("submit", async (e) => {
   });
   console.log(response);
   const data = await response.json();
-  console.log("LoginResult:", data.message);
-  console.log(response.status);
-  if(response.status === 200){
-    window.location.href = "/secrets";
+
+const currentHref = window.location.href.toLowerCase();
+const endsWithLoginHTML = currentHref.endsWith("login.html");
+  if (response.status === 200) {
+    if(endsWithLoginHTML){
+      window.location.href = "/secrets";
+    }else{
+      window.location.reload();
+    }
+    
   }
-  
 });
+
+
+
+
+
