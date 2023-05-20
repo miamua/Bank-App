@@ -12,16 +12,17 @@ registerForm.addEventListener("submit", async(e) => {
             'Content-type': 'application/json'
         },
         body: JSON.stringify({
-            username: registerUsername.value,
+            username: registerUsername.value.toLowerCase(),
             password: registerPassword.value,
             money: Number(registerMoney.value)
-
         })
     });
     //const data = await response.json();
     //console.log('RegisterResult:', data);
     if(response.status === 200){
-        alert("Registration successful, Please login");
+        alert("Registration successful, Please login.");
         window.location.href = "login.html";
+      }else if(response.status === 409){
+        alert("User already exists");
       }
 });

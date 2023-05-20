@@ -7,8 +7,9 @@ const deleteAccount = async (e) => {
   });
   console.log(res);
   if (res.status === 204) {
-    alert("Account have been removed");
-    window.location.href = "/accounts";
+    alert("Account has been removed.");
+    const res = await fetch("/logout", { method: "POST" });
+    window.location.href = "/";
   }
 };
 
@@ -59,7 +60,6 @@ const deposit = async (e) => {
       }),
     }
   );
-  console.log(response);
   renderAccount();
 };
 
@@ -79,7 +79,6 @@ const withdraw = async (e) => {
       }),
     }
   );
-  console.log(response);
   if (response.status === 400) {
     alert("Insufficient funds.");
   }

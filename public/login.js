@@ -27,7 +27,8 @@ const endsWithLoginHTML = currentHref.endsWith("login.html");
     }else{
       window.location.reload();
     }
-    
+  }else{
+    alert(`${response.statusText}, Please try again.`);
   }
 });
 

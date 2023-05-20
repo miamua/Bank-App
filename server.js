@@ -4,7 +4,6 @@ import { MongoClient, ObjectId } from "mongodb";
 import bcrypt from "bcrypt";
 import session from "express-session";
 import cookieParser from "cookie-parser";
-import cors from "cors";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 
@@ -13,7 +12,6 @@ const saltRounds = 10;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-app.use(cors());
 app.use(cookieParser());
 //app.use(express.static("public"));
 app.use(express.static(join(__dirname, "public")));
@@ -43,9 +41,11 @@ await client.connect();
 const db = client.db("bankDB");
 const usersCollection = db.collection("accounts");
 
+/*
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to the home page" });
 });
+*/
 
 app.get("/accounts/all", requireLogin, async (req, res) => {
   const limit = parseInt(req.query.limit) || 0;
@@ -65,7 +65,11 @@ app.post("/account/:id/delete", async (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
-  const hashPassword = await bcrypt.hash(req.body.password, saltRounds);
+  const isExist = await usersCollection.findOne({username: req.body.username});
+  if(isExist){
+    res.status(409).json({ message: "User already exists" });
+  }else{
+    const hashPassword = await bcrypt.hash(req.body.password, saltRounds);
   await usersCollection.insertOne({
     username: req.body.username,
     password: hashPassword,
@@ -73,6 +77,7 @@ app.post("/register", async (req, res) => {
   });
   res.json({ message: "Registration successful" });
   //res.sendFile(join(__dirname, '/public/login.html'));
+  }
 });
 
 app.post("/login", async (req, res) => {
@@ -89,16 +94,14 @@ app.post("/login", async (req, res) => {
       res.json({
         user: req.session.user,
       });
-      //res.status(200).json({ message: "Login successful"});
-      //res.sendFile(__dirname + '/secrets.html');
     } else {
       res.status(401).json({
         message: "Wrong Password",
       });
     }
   } else {
-    console.log(req.body);
-    res.status(401).json({ message: "User can't found" });
+    //console.log(req.body);
+    res.status(401).json({ message: "User not found" });
   }
 });
 
